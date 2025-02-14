@@ -1,0 +1,192 @@
+/* Global Styles */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background: #e0f0ff;
+    color: #333;
+  }
+  
+  /* Header with blue theme and bevel effect */
+  header {
+    background: #005eb8;
+    color: #fff;
+    padding: 20px 0;
+    border-bottom: 4px solid #003d80;
+  }
+  #theme span {
+    font-style: italic;
+  }
+  #countdown {
+    font-size: 1.2em;
+    margin-top: 10px;
+  }
+  
+  /* Main Content */
+  main {
+    padding: 20px;
+  }
+  
+  /* Styled Upload Button */
+  #uploadBtn {
+    background: linear-gradient(45deg, #0074e8, #005eb8);
+    color: #fff;
+    padding: 12px 24px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px #003d80;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    margin: 10px;
+  }
+  #uploadBtn:hover {
+    transform: scale(1.05);
+  }
+  #uploadBtn:active {
+    transform: translateY(4px);
+    box-shadow: none;
+  }
+  
+  /* Modal styling */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
+  .modal-content {
+    background-color: #f9f9f9;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  /* Detail modal can be larger */
+  .detail-content {
+    max-width: 600px;
+  }
+  
+  /* Close button styling */
+  .close {
+    color: #aaa;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover,
+  .close:focus {
+    color: #000;
+  }
+  
+  /* Form styling */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+  }
+  label {
+    font-weight: bold;
+  }
+  input[type="text"],
+  input[type="url"],
+  textarea,
+  select {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #005eb8;
+    border-radius: 4px;
+  }
+  /* Submit button inside form */
+  button[type="submit"] {
+    background: #005eb8;
+    color: #fff;
+    border: none;
+    margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px #003d80;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  button[type="submit"]:active {
+    transform: translateY(4px);
+    box-shadow: none;
+  }
+  
+  /* Tooltip styling */
+  .tooltip {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #0074e8;
+    color: #fff;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 1100;
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1101;
+    top: 35px;
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* Game List / Leaderboard container */
+#gameList {
+    margin: 20px auto;
+    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* Game entry styling */
+  .game-entry {
+    background: #fff;
+    border: 2px solid #005eb8;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 0 4px #003d80;
+    width: 200px;
+    text-align: center;
+  }
+  
+  .game-entry img {
+    max-width: 100%;
+    height: auto;
+  }

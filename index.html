@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Jam 2025</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Game Jam 2025</h1>
+    <p id="theme">Theme: <span>Survive the Apocalypse</span></p>
+    <div id="countdown"></div>
+  </header>
+
+  <main>
+    <!-- The upload button will only be visible during the jam period -->
+    <button id="uploadBtn">Upload Your Game</button>
+    <!-- Container for showing game entries or leaderboard -->
+    <div id="gameList"></div>
+    <!-- This button will only be visible after the jam ends -->
+    <button id="editLeaderboardBtn" style="display:none;">Edit Leaderboard</button>
+  </main>
+
+  <!-- Modal Upload Form -->
+  <div id="uploadModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="uploadClose">&times;</span>
+      <h2>Upload Your Game Entry</h2>
+      <form id="uploadForm">
+        <label for="entryType">Entry Type:</label>
+        <select id="entryType" name="entryType">
+          <option value="solo">Solo</option>
+          <option value="duo">Duo</option>
+          <option value="trio">Trio</option>
+        </select>
+
+        <!-- Solo entry fields -->
+        <div id="soloFields" class="entryFields">
+          <label for="soloName">Your Name:</label>
+          <input type="text" id="soloName" name="soloName" required />
+        </div>
+
+        <!-- Team entry fields (duo/trio) -->
+        <div id="teamFields" class="entryFields" style="display:none;">
+          <label for="teamName">Team Name:</label>
+          <input type="text" id="teamName" name="teamName" required />
+          <div id="teamMembers"></div>
+        </div>
+
+        <label for="gameName">Game Name:</label>
+        <input type="text" id="gameName" name="gameName" required />
+
+        <!-- Image upload field (file input; standard browser UI) -->
+        <label for="gameImage">Game Image:</label>
+        <input type="file" id="gameImage" name="gameImage" accept="image/*" required />
+
+        <!-- Short description field -->
+        <label for="gameDescription">Short Description:</label>
+        <textarea id="gameDescription" name="gameDescription" placeholder="Enter a short description of your game..." required></textarea>
+
+        <!-- Code.org share link -->
+        <label for="shareUrl">Code.org Share Link:</label>
+        <input type="url" id="shareUrl" name="shareUrl" placeholder="https://code.org/..." required />
+
+        <button type="submit">Submit Entry</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detail Modal: shows full game details when an entry is clicked -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content detail-content">
+      <span class="close detail-close">&times;</span>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <!-- Leaderboard Edit Modal: only accessible to admin -->
+  <div id="editLeaderboardModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="editLeaderboardClose">&times;</span>
+      <h2>Edit Leaderboard</h2>
+      <form id="editLeaderboardForm">
+        <div id="leaderboardEditContainer">
+          <!-- This will be populated with each game entry and an input for its score -->
+        </div>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tooltip element (a small "?" in the corner) -->
+  <div class="tooltip">?
+    <span class="tooltiptext">Your helpful hover text goes here.</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
