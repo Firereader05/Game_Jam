@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Game Jam 2025</title>
   <link rel="stylesheet" href="styles.css" />
+  <!-- Optional favicon fix -->
+  <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
 </head>
 <body>
   <header>
@@ -51,7 +53,7 @@
         <label for="gameName">Game Name:</label>
         <input type="text" id="gameName" name="gameName" required />
 
-        <!-- Image upload field (file input; standard browser UI) -->
+        <!-- Image upload field -->
         <label for="gameImage">Game Image:</label>
         <input type="file" id="gameImage" name="gameImage" accept="image/*" required />
 
@@ -73,6 +75,8 @@
     <div class="modal-content detail-content">
       <span class="close detail-close">&times;</span>
       <div id="detailContent"></div>
+      <!-- "Play Game" button styled like other buttons -->
+      <a href="#" id="playButton">Play Game</a>
     </div>
   </div>
 
@@ -83,22 +87,19 @@
       <h2>Edit Leaderboard</h2>
       <form id="editLeaderboardForm">
         <div id="leaderboardEditContainer">
-          <!-- This will be populated with each game entry and an input for its score -->
+          <!-- Populated dynamically -->
         </div>
         <button type="submit">Save Changes</button>
       </form>
     </div>
   </div>
 
-<!-- Tooltip element (a small "?" in the corner) -->
-<div class="tooltip">?
-  <span class="tooltiptext">
-    Click CONTROL + SHIFT +
-    <img src="images/info-icon.png" alt="Info" style="width: 25px; height: auto;">
-     for a partial screenshot
-  </span>
-</div>
-
+  <!-- Tooltip element (a small "?" in the top-right corner with hover text) -->
+  <div class="tooltip">?
+    <span class="tooltiptext">
+      Your custom tooltip text here.
+    </span>
+  </div>
 
   <script src="script.js"></script>
 </body>

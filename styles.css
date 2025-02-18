@@ -28,8 +28,8 @@ main {
   padding: 20px;
 }
 
-/* Styled Upload Button */
-#uploadBtn {
+/* Button Styling */
+button, a {
   background: linear-gradient(45deg, #0074e8, #005eb8);
   color: #fff;
   padding: 12px 24px;
@@ -40,11 +40,13 @@ main {
   cursor: pointer;
   transition: transform 0.1s, box-shadow 0.1s;
   margin: 10px;
+  text-decoration: none;
+  display: inline-block;
 }
-#uploadBtn:hover {
+button:hover, a:hover {
   transform: scale(1.05);
 }
-#uploadBtn:active {
+button:active, a:active {
   transform: translateY(4px);
   box-shadow: none;
 }
@@ -59,7 +61,7 @@ main {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 .modal-content {
   background-color: #f9f9f9;
@@ -70,9 +72,8 @@ main {
   max-width: 500px;
   position: relative;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-/* Detail modal can be larger */
 .detail-content {
   max-width: 600px;
 }
@@ -112,57 +113,6 @@ select {
   border: 2px solid #005eb8;
   border-radius: 4px;
 }
-/* Submit button inside form */
-button[type="submit"] {
-  background: #005eb8;
-  color: #fff;
-  border: none;
-  margin-top: 10px;
-  border-radius: 8px;
-  box-shadow: 0 4px #003d80;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-button[type="submit"]:active {
-  transform: translateY(4px);
-  box-shadow: none;
-}
-
-/* Tooltip styling */
-.tooltip {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background-color: #0074e8;
-  color: #fff;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  line-height: 25px;
-  cursor: pointer;
-  font-weight: bold;
-  z-index: 1100;
-}
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 200px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px;
-  position: absolute;
-  z-index: 1101;
-  top: 35px;
-  right: 0;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
-}
 
 /* Game List / Leaderboard container */
 #gameList {
@@ -173,53 +123,71 @@ button[type="submit"]:active {
   gap: 20px;
   justify-content: center;
 }
-
-/* Compress the game entries */
-.game-entry,
-.leaderboard-entry {
-  width: 150px;
-  padding: 8px;
-  margin: 8px;
+.game-entry {
   background: #fff;
   border: 2px solid #005eb8;
   border-radius: 8px;
   box-shadow: 0 4px #003d80;
+  cursor: pointer;
+  overflow: hidden;
+  width: 200px;
   text-align: center;
+  transition: transform 0.2s;
 }
-
-.game-entry img,
-.leaderboard-entry img {
+.game-entry:hover {
+  transform: scale(1.05);
+}
+.game-entry img {
   width: 100%;
   height: auto;
 }
 
-/* Button style for the "Play Game" link */
-.playBtn {
-  display: inline-block;
-  background: linear-gradient(45deg, #0074e8, #005eb8);
-  color: #fff;
-  padding: 8px 16px;
-  font-size: 1em;
-  border: none;
+/* Leaderboard entry styling */
+.leaderboard-entry {
+  background: #fff;
+  border: 2px solid #005eb8;
   border-radius: 8px;
+  padding: 10px;
+  margin: 10px;
   box-shadow: 0 4px #003d80;
-  cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
-  margin: 8px;
-  text-decoration: none; /* remove underline for links */
+  width: 200px;
+  text-align: center;
 }
+.top1 { background: gold; }
+.top2 { background: silver; }
+.top3 { background: #cd7f32; }
 
-.playBtn:hover {
-  transform: scale(1.05);
+/* Tooltip styling */
+.tooltip {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: #0074e8;
+  color: #fff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-weight: bold;
+  cursor: default;
 }
-
-.playBtn:active {
-  transform: translateY(4px);
-  box-shadow: none;
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 250px;
+  background-color: #555;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1100;
 }
-
-/* Detail modal content styling */
-#detailContent img {
-  max-width: 100%;
-  height: auto;
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
