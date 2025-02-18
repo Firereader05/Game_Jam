@@ -1,23 +1,14 @@
 {
-  "name": "game_jam",
+  "name": "game-jam-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "script.js",
+  "description": "Socket.io server for Game Jam on Render",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"npx vite\" \"node server.js\"",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
+    "express": "^4.18.2",
+    "socket.io": "^4.5.4"
   }
 }

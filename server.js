@@ -5,37 +5,40 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 
 const app = express();
-app.use(cors()); // allow CORS requests
 
-// Serve static files from a "public" directory (optional)
+// Allow CORS (adjust origins in production as needed)
+app.use(cors());
+
+// (Optional) Serve static files from the "public" directory
 app.use(express.static("public"));
 
-// Basic root route
+// A basic route for testing
 app.get("/", (req, res) => {
-  res.send("Socket.io Game Jam Server is running!");
+  res.send("Socket.io Game Jam Server is running on Render!");
 });
 
+// Create the HTTP server and attach Socket.io
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // Adjust this in production
+    origin: "*", // You can lock this down in production
     methods: ["GET", "POST"],
   },
 });
 
-// Global variable to store game entries
+// Global variable to store game uploads (shared across all clients)
 let uploads = [];
 
-// Socket.io connection logic
+// Socket.io connection handling
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  // When a client requests data, send the current uploads
+  // When a client requests data, send current uploads
   socket.on("requestData", () => {
     socket.emit("sendData", uploads);
   });
 
-  // When a client updates the data, save it and broadcast to everyone
+  // When a client updates data, store and broadcast it
   socket.on("updateData", (data) => {
     uploads = data;
     io.emit("sendData", uploads);
@@ -46,8 +49,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// Listen on the desired port (e.g., 3003)
-const PORT = process.env.PORT || 3003;
+// Use process.env.PORT provided by Render or default to 3000
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
