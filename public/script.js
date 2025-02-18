@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
   // ---------------- Configuration Variables ----------------
   const showUploadBeforeJam = true;
   const adminPassword = "admin123";
+  // Set overrideTimeUp to true to force the jam as finished (for testing)
+  const overrideTimeUp = false;
 
   // ---------------- Calculate Jam Timing ----------------
   const now = new Date();
@@ -11,7 +13,27 @@ document.addEventListener("DOMContentLoaded", function() {
   const endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
 
   // ---------------- Global Upload Data ----------------
-  let uploads = JSON.parse(localStorage.getItem("gameUploads") || "[]");
+  // This will be shared via Socket.io
+  let uploads = [];
+
+  // ---------------- Socket.io Setup ----------------
+  // Ensure you've included the Socket.io client library in your HTML:
+  // <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  // Change the URL if your server runs elsewhere.
+  const socket = io("http://localhost:3003"); // adjust port if needed
+
+  // Request the current data from the server once connected
+  socket.on("connect", () => {
+    console.log("Connected to server:", socket.id);
+    socket.emit("requestData");
+  });
+
+  // Listen for shared data updates from the server
+  socket.on("sendData", (data) => {
+    console.log("Received shared data:", data);
+    uploads = data;
+    updateGameList();
+  });
 
   // ---------------- Countdown & UI Updates ----------------
   const countdownEl = document.getElementById("countdown");
@@ -20,19 +42,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
   setInterval(() => {
     const current = new Date();
-    if (current < startDate) {
-      uploadBtn.style.display = showUploadBeforeJam ? "inline-block" : "none";
-      countdownEl.innerHTML = "Game Jam starts in: " + formatTime(startDate - current);
-      updateGameList();
-    } else if (current < endDate) {
-      uploadBtn.style.display = "inline-block";
-      countdownEl.innerHTML = "Game Jam ends in: " + formatTime(endDate - current);
-      updateGameList();
-    } else {
+    if (overrideTimeUp || current >= endDate) {
       uploadBtn.style.display = "none";
       countdownEl.innerHTML = "Game Jam has ended!";
       updateLeaderboard();
       editLeaderboardBtn.style.display = "inline-block";
+    } else if (current < startDate) {
+      uploadBtn.style.display = showUploadBeforeJam ? "inline-block" : "none";
+      countdownEl.innerHTML = "Game Jam starts in: " + formatTime(startDate - current);
+      updateGameList();
+    } else {
+      uploadBtn.style.display = "inline-block";
+      countdownEl.innerHTML = "Game Jam ends in: " + formatTime(endDate - current);
+      updateGameList();
     }
   }, 1000);
 
@@ -49,8 +71,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const uploadClose = document.getElementById("uploadClose");
   const uploadForm = document.getElementById("uploadForm");
 
-  uploadBtn.addEventListener("click", () => modal.style.display = "block");
-  uploadClose.addEventListener("click", () => modal.style.display = "none");
+  uploadBtn.addEventListener("click", () => (modal.style.display = "block"));
+  uploadClose.addEventListener("click", () => (modal.style.display = "none"));
   window.addEventListener("click", (event) => {
     if (event.target === modal) modal.style.display = "none";
   });
@@ -65,49 +87,38 @@ document.addEventListener("DOMContentLoaded", function() {
   // Update required attributes based on entry type
   entryTypeEl.addEventListener("change", () => {
     const type = entryTypeEl.value;
-
     if (type === "solo") {
       soloFields.style.display = "block";
       teamFields.style.display = "none";
-
       soloNameInput.setAttribute("required", "true");
       teamNameInput.removeAttribute("required");
     } else {
       soloFields.style.display = "none";
       teamFields.style.display = "block";
-
       soloNameInput.removeAttribute("required");
       teamNameInput.setAttribute("required", "true");
     }
-
-    // Reset team members for team entries
-    if (type !== "solo") {
-      // Example: you might dynamically generate team member inputs here.
-      // For now, we clear the container.
-      teamMembersDiv.innerHTML = "";
-    } else {
-      teamMembersDiv.innerHTML = "";
-    }
+    teamMembersDiv.innerHTML = "";
   });
-
-  // Call the change event once to set initial field states based on the default value.
   entryTypeEl.dispatchEvent(new Event("change"));
 
   // ---------------- Handle Form Submission ----------------
   uploadForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const entryType = entryTypeEl.value;
-    const names = entryType === "solo"
-      ? { soloName: soloNameInput.value }
-      : {
-          teamName: teamNameInput.value,
-          teamMembers: [...document.querySelectorAll("#teamMembers input")].map(input => input.value)
-        };
+    const names =
+      entryType === "solo"
+        ? { soloName: soloNameInput.value }
+        : {
+            teamName: teamNameInput.value,
+            teamMembers: [
+              ...document.querySelectorAll("#teamMembers input"),
+            ].map((input) => input.value),
+          };
     const gameName = document.getElementById("gameName").value;
     const gameDescription = document.getElementById("gameDescription").value;
     const shareUrl = document.getElementById("shareUrl").value;
     const file = document.getElementById("gameImage").files[0];
-
     if (!file) return alert("Please select an image file.");
 
     const reader = new FileReader();
@@ -120,18 +131,18 @@ document.addEventListener("DOMContentLoaded", function() {
         gameDescription,
         shareUrl,
         submittedAt: new Date().toISOString(),
-        score: 0
+        score: 0,
       };
+      // Add entry locally and then notify server of update.
       uploads.push(gameEntry);
-      localStorage.setItem("gameUploads", JSON.stringify(uploads));
+      socket.emit("updateData", uploads);
       modal.style.display = "none";
       uploadForm.reset();
-      alert("Game uploaded successfully!");
-      updateGameList();
     };
     reader.readAsDataURL(file);
   });
 
+  // ---------------- Display Functions ----------------
   function updateGameList() {
     const gameList = document.getElementById("gameList");
     gameList.innerHTML = "";
@@ -145,13 +156,11 @@ document.addEventListener("DOMContentLoaded", function() {
       const desc = document.createElement("p");
       desc.textContent = entry.gameDescription;
       entryDiv.appendChild(desc);
-      entryDiv.addEventListener("click", () => {
-        openDetailModal(entry);
-      });
+      entryDiv.addEventListener("click", () => openDetailModal(entry));
       gameList.appendChild(entryDiv);
     });
   }
-  
+
   function updateLeaderboard() {
     const sortedUploads = uploads.slice().sort((a, b) => b.score - a.score);
     const gameList = document.getElementById("gameList");
@@ -179,9 +188,90 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Dummy detail modal functionality
+  // ---------------- Detail Modal Functionality ----------------
+  const detailModal = document.getElementById("detailModal");
+  const detailCloseBtn = document.querySelector(".detail-close");
+  const detailContent = document.getElementById("detailContent");
+  const playButton = document.getElementById("playButton");
+
   function openDetailModal(entry) {
-    // Implement as needed
-    alert(`Game: ${entry.gameName}\nDescription: ${entry.gameDescription}`);
+    detailContent.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = entry.gameImageData;
+    img.alt = entry.gameName;
+    detailContent.appendChild(img);
+    const nameP = document.createElement("p");
+    nameP.textContent = entry.gameName;
+    detailContent.appendChild(nameP);
+    const descP = document.createElement("p");
+    descP.textContent = entry.gameDescription;
+    detailContent.appendChild(descP);
+    playButton.href = entry.shareUrl;
+    playButton.style.display = "inline-block";
+    detailModal.style.display = "block";
   }
+
+  detailCloseBtn.addEventListener("click", () => {
+    detailModal.style.display = "none";
+  });
+  window.addEventListener("click", (event) => {
+    if (event.target === detailModal) detailModal.style.display = "none";
+  });
+
+  // ---------------- Leaderboard Edit Functionality ----------------
+  const editLeaderboardModal = document.getElementById("editLeaderboardModal");
+  const editLeaderboardClose = document.getElementById("editLeaderboardClose");
+  const editLeaderboardForm = document.getElementById("editLeaderboardForm");
+  const leaderboardEditContainer = document.getElementById("leaderboardEditContainer");
+
+  editLeaderboardBtn.addEventListener("click", () => {
+    const password = prompt("Enter admin password:");
+    if (password === adminPassword) {
+      populateEditLeaderboard();
+      editLeaderboardModal.style.display = "block";
+    } else {
+      alert("Incorrect password.");
+    }
+  });
+  editLeaderboardClose.addEventListener("click", () => {
+    editLeaderboardModal.style.display = "none";
+  });
+  window.addEventListener("click", (event) => {
+    if (event.target === editLeaderboardModal) {
+      editLeaderboardModal.style.display = "none";
+    }
+  });
+
+  function populateEditLeaderboard() {
+    leaderboardEditContainer.innerHTML = "";
+    uploads.forEach((entry, index) => {
+      const div = document.createElement("div");
+      div.style.marginBottom = "10px";
+      const label = document.createElement("label");
+      label.textContent = `${entry.gameName} (Current score: ${entry.score}): `;
+      label.style.marginRight = "10px";
+      const input = document.createElement("input");
+      input.type = "number";
+      input.value = entry.score;
+      input.dataset.index = index;
+      div.appendChild(label);
+      div.appendChild(input);
+      leaderboardEditContainer.appendChild(div);
+    });
+  }
+
+  editLeaderboardForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const inputs = leaderboardEditContainer.querySelectorAll("input");
+    inputs.forEach(input => {
+      const idx = input.dataset.index;
+      const newScore = parseInt(input.value, 10);
+      if (!isNaN(newScore)) {
+        uploads[idx].score = newScore;
+      }
+    });
+    socket.emit("updateData", uploads);
+    editLeaderboardModal.style.display = "none";
+    updateLeaderboard();
+  });
 });

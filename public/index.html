@@ -102,5 +102,23 @@
   </div>
 
   <script src="script.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+  // Connect to your Socket.io server
+  const socket = io("http://localhost:3003");
+
+  socket.on("connect", () => {
+    console.log("Connected to server:", socket.id);
+    socket.emit("requestData");
+  });
+
+  socket.on("sendData", (data) => {
+    console.log("Shared game data:", data);
+    // Update your UI accordingly
+  });
+
+  // Example of sending data update (e.g., after a form submission)
+  // socket.emit("updateData", updatedUploadsArray);
+</script>
 </body>
 </html>
