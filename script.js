@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const teamNameInput = document.getElementById("teamName");
   const teamMembersDiv = document.getElementById("teamMembers");
 
-  // ✅ FIX: Remove "required" from hidden fields to prevent validation errors
+  // Update required attributes based on entry type
   entryTypeEl.addEventListener("change", () => {
     const type = entryTypeEl.value;
 
@@ -80,9 +80,18 @@ document.addEventListener("DOMContentLoaded", function() {
       teamNameInput.setAttribute("required", "true");
     }
 
-    // Clear and reset team members if switching
-    teamMembersDiv.innerHTML = type !== "solo" ? "<label>Team Members:</label><input type='text' required>" : "";
+    // Reset team members for team entries
+    if (type !== "solo") {
+      // Example: you might dynamically generate team member inputs here.
+      // For now, we clear the container.
+      teamMembersDiv.innerHTML = "";
+    } else {
+      teamMembersDiv.innerHTML = "";
+    }
   });
+
+  // Call the change event once to set initial field states based on the default value.
+  entryTypeEl.dispatchEvent(new Event("change"));
 
   // ---------------- Handle Form Submission ----------------
   uploadForm.addEventListener("submit", async (e) => {
@@ -168,5 +177,11 @@ document.addEventListener("DOMContentLoaded", function() {
       entryDiv.appendChild(scoreP);
       gameList.appendChild(entryDiv);
     });
+  }
+
+  // Dummy detail modal functionality
+  function openDetailModal(entry) {
+    // Implement as needed
+    alert(`Game: ${entry.gameName}\nDescription: ${entry.gameDescription}`);
   }
 });
