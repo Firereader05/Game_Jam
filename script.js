@@ -62,12 +62,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
   entryTypeEl.addEventListener("change", () => {
     const type = entryTypeEl.value;
+    const soloNameInput = document.getElementById("soloName");
+    const teamNameInput = document.getElementById("teamName");
+  
     soloFields.style.display = type === "solo" ? "block" : "none";
     teamFields.style.display = type !== "solo" ? "block" : "none";
-    document.getElementById("soloName").required = type === "solo";
-    document.getElementById("teamName").required = type !== "solo";
+  
+    // Only mark required fields that are visible
+    if (type === "solo") {
+      soloNameInput.required = true;
+      teamNameInput.required = false;
+    } else {
+      soloNameInput.required = false;
+      teamNameInput.required = true;
+    }
+  
     teamMembersDiv.innerHTML = type !== "solo" ? "<label>Team Members:</label><input type='text' required>" : "";
-  });
+  });  
 
   // ---------------- Handle Form Submission ----------------
   uploadForm.addEventListener("submit", async (e) => {
