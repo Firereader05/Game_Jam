@@ -4,41 +4,43 @@ const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
 
+// Initialize Express app
 const app = express();
 
-// Allow CORS (adjust origins in production as needed)
+// Allow Cross-Origin requests (adjust origin in production)
 app.use(cors());
 
-// (Optional) Serve static files from the "public" directory
+// (Optional) Serve static files from "public" folder
+// Create a 'public' folder in your project and place your client files there if needed.
 app.use(express.static("public"));
 
-// A basic route for testing
+// Basic root route
 app.get("/", (req, res) => {
   res.send("Socket.io Game Jam Server is running on Render!");
 });
 
-// Create the HTTP server and attach Socket.io
+// Create HTTP server and attach Socket.io
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // You can lock this down in production
-    methods: ["GET", "POST"],
-  },
+    origin: "*", // Adjust as necessary for production
+    methods: ["GET", "POST"]
+  }
 });
 
-// Global variable to store game uploads (shared across all clients)
+// Global variable to hold shared game uploads
 let uploads = [];
 
 // Socket.io connection handling
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  // When a client requests data, send current uploads
+  // When a client requests the data, send current uploads
   socket.on("requestData", () => {
     socket.emit("sendData", uploads);
   });
 
-  // When a client updates data, store and broadcast it
+  // When a client updates data, store it and broadcast to all
   socket.on("updateData", (data) => {
     uploads = data;
     io.emit("sendData", uploads);
@@ -49,7 +51,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Use process.env.PORT provided by Render or default to 3000
+// Use Render’s PORT environment variable or default to 3000
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
