@@ -60,25 +60,21 @@ document.addEventListener("DOMContentLoaded", function() {
   const teamFields = document.getElementById("teamFields");
   const teamMembersDiv = document.getElementById("teamMembers");
 
+  // ✅ FIX: Prevent validation errors on hidden fields
   entryTypeEl.addEventListener("change", () => {
     const type = entryTypeEl.value;
     const soloNameInput = document.getElementById("soloName");
     const teamNameInput = document.getElementById("teamName");
-  
+
     soloFields.style.display = type === "solo" ? "block" : "none";
     teamFields.style.display = type !== "solo" ? "block" : "none";
-  
-    // Only mark required fields that are visible
-    if (type === "solo") {
-      soloNameInput.required = true;
-      teamNameInput.required = false;
-    } else {
-      soloNameInput.required = false;
-      teamNameInput.required = true;
-    }
-  
+
+    // Only require visible fields
+    soloNameInput.required = type === "solo";
+    teamNameInput.required = type !== "solo";
+
     teamMembersDiv.innerHTML = type !== "solo" ? "<label>Team Members:</label><input type='text' required>" : "";
-  });  
+  });
 
   // ---------------- Handle Form Submission ----------------
   uploadForm.addEventListener("submit", async (e) => {
@@ -119,7 +115,6 @@ document.addEventListener("DOMContentLoaded", function() {
     reader.readAsDataURL(file);
   });
 
-  // ---------------- Display Functions ----------------
   function updateGameList() {
     const gameList = document.getElementById("gameList");
     gameList.innerHTML = "";
@@ -166,87 +161,4 @@ document.addEventListener("DOMContentLoaded", function() {
       gameList.appendChild(entryDiv);
     });
   }
-  
-  // ---------------- Detail Modal Functionality ----------------
-  const detailModal = document.getElementById("detailModal");
-  const detailCloseBtn = document.querySelector(".detail-close");
-  const detailContent = document.getElementById("detailContent");
-  const playButton = document.getElementById("playButton");
-  
-  function openDetailModal(entry) {
-    detailContent.innerHTML = "";
-    const img = document.createElement("img");
-    img.src = entry.gameImageData;
-    img.alt = entry.gameName;
-    detailContent.appendChild(img);
-    const desc = document.createElement("p");
-    desc.textContent = entry.gameDescription;
-    detailContent.appendChild(desc);
-    playButton.href = entry.shareUrl;
-    detailModal.style.display = "block";
-  }
-  detailCloseBtn.addEventListener("click", () => {
-    detailModal.style.display = "none";
-  });
-  window.addEventListener("click", (event) => {
-    if (event.target === detailModal) {
-      detailModal.style.display = "none";
-    }
-  });
-  
-  // ---------------- Leaderboard Edit Functionality ----------------
-  const editLeaderboardModal = document.getElementById("editLeaderboardModal");
-  const editLeaderboardClose = document.getElementById("editLeaderboardClose");
-  const editLeaderboardForm = document.getElementById("editLeaderboardForm");
-  const leaderboardEditContainer = document.getElementById("leaderboardEditContainer");
-  
-  editLeaderboardBtn.addEventListener("click", () => {
-    const password = prompt("Enter admin password:");
-    if (password === adminPassword) {
-      populateEditLeaderboard();
-      editLeaderboardModal.style.display = "block";
-    } else {
-      alert("Incorrect password.");
-    }
-  });
-  editLeaderboardClose.addEventListener("click", () => {
-    editLeaderboardModal.style.display = "none";
-  });
-  window.addEventListener("click", (event) => {
-    if (event.target === editLeaderboardModal) {
-      editLeaderboardModal.style.display = "none";
-    }
-  });
-  
-  function populateEditLeaderboard() {
-    leaderboardEditContainer.innerHTML = "";
-    uploads.forEach((entry, index) => {
-      const div = document.createElement("div");
-      div.style.marginBottom = "10px";
-      const label = document.createElement("label");
-      label.textContent = `${entry.gameName} (Current score: ${entry.score}): `;
-      label.style.marginRight = "10px";
-      const input = document.createElement("input");
-      input.type = "number";
-      input.value = entry.score;
-      input.dataset.index = index;
-      div.appendChild(label);
-      div.appendChild(input);
-      leaderboardEditContainer.appendChild(div);
-    });
-  }
-  
-  editLeaderboardForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const inputs = leaderboardEditContainer.querySelectorAll("input");
-    inputs.forEach(input => {
-      const idx = input.dataset.index;
-      const newScore = parseInt(input.value, 10);
-      if (!isNaN(newScore)) {
-        uploads[idx].score = newScore;
-      }
-    });
-    editLeaderboardModal.style.display = "none";
-    updateLeaderboard();
-  });
 });
