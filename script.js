@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // ---------------- Calculate Jam Timing ----------------
   const now = new Date();
   const dayOfWeek = now.getDay();
-  const offset = (3 - dayOfWeek + 7) % 7 || 7;
+  const offset = (3 - dayOfWeek) % 7 || 7;
   const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset, 0, 0, 0, 0);
   const endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
 
